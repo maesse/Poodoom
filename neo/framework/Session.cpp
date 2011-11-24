@@ -34,7 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 idCVar	idSessionLocal::com_showAngles( "com_showAngles", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
 idCVar	idSessionLocal::com_minTics( "com_minTics", "1", CVAR_SYSTEM, "" );
 idCVar	idSessionLocal::com_showTics( "com_showTics", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
-idCVar	idSessionLocal::com_fixedTic( "com_fixedTic", "0", CVAR_SYSTEM | CVAR_INTEGER, "", 0, 10 );
+idCVar	idSessionLocal::com_fixedTic( "com_fixedTic", "0", CVAR_SYSTEM | CVAR_INTEGER, "", -1, 10 );
 idCVar	idSessionLocal::com_showDemo( "com_showDemo", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
 idCVar	idSessionLocal::com_skipGameDraw( "com_skipGameDraw", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
 idCVar	idSessionLocal::com_aviDemoSamples( "com_aviDemoSamples", "16", CVAR_SYSTEM, "" );
@@ -3098,19 +3098,19 @@ we toggled some key state to CDKEY_CHECKING. send a standalone auth packet to va
 void idSessionLocal::EmitGameAuth( void ) {
 	// make sure the auth reply is empty, we use it to indicate an auth reply
 	authMsg.Empty();
-	if ( idAsyncNetwork::client.SendAuthCheck( cdkey_state == CDKEY_CHECKING ? cdkey : NULL, xpkey_state == CDKEY_CHECKING ? xpkey : NULL ) ) {		
-		authEmitTimeout = Sys_Milliseconds() + CDKEY_AUTH_TIMEOUT;
-		common->DPrintf( "authing with the master..\n" );
-	} else {
-		// net is not available
-		common->DPrintf( "sendAuthCheck failed\n" );
+	//if ( idAsyncNetwork::client.SendAuthCheck( cdkey_state == CDKEY_CHECKING ? cdkey : NULL, xpkey_state == CDKEY_CHECKING ? xpkey : NULL ) ) {		
+	//	authEmitTimeout = Sys_Milliseconds() + CDKEY_AUTH_TIMEOUT;
+	//	common->DPrintf( "authing with the master..\n" );
+	//} else {
+	//	// net is not available
+	//	common->DPrintf( "sendAuthCheck failed\n" );
 		if ( cdkey_state == CDKEY_CHECKING ) {
 			cdkey_state = CDKEY_OK;
 		}
 		if ( xpkey_state == CDKEY_CHECKING ) {
 			xpkey_state = CDKEY_OK;
 		}
-	}	
+	//}	
 }
 
 /*
@@ -3170,9 +3170,9 @@ bool idSessionLocal::CheckKey( const char *key, bool netConnect, bool offline_va
 		}
 	}
 	
-	if ( !offline_valid[ 0 ] || !offline_valid[1] ) {
+	/*if ( !offline_valid[ 0 ] || !offline_valid[1] ) {
 		return false;
-	}
+	}*/
 
 	// offline checks passed, we'll return true and optionally emit key check requests
 	// the function should only modify the key states if the offline checks passed successfully
@@ -3203,11 +3203,11 @@ emit an auth packet to the master if possible and needed
 ===============
 */
 bool idSessionLocal::CDKeysAreValid( bool strict ) {
-	int i;
+	//int i;
 	bool emitAuth = false;
 
 	if ( cdkey_state == CDKEY_UNKNOWN ) {
-		if ( strlen( cdkey ) != CDKEY_BUF_LEN - 1 ) {
+		/*if ( strlen( cdkey ) != CDKEY_BUF_LEN - 1 ) {
 			cdkey_state = CDKEY_INVALID;
 		} else {
 			for ( i = 0; i < CDKEY_BUF_LEN-1; i++ ) {
@@ -3217,14 +3217,14 @@ bool idSessionLocal::CDKeysAreValid( bool strict ) {
 				}
 			}
 		}		
-		if ( cdkey_state == CDKEY_UNKNOWN ) {
+		if ( cdkey_state == CDKEY_UNKNOWN ) {*/
 			cdkey_state = CDKEY_CHECKING;
 			emitAuth = true;
-		}
+		//}
 	}
 	if ( xpkey_state == CDKEY_UNKNOWN ) {
 		if ( fileSystem->HasD3XP() ) {
-			if ( strlen( xpkey ) != CDKEY_BUF_LEN -1 ) {
+			/*if ( strlen( xpkey ) != CDKEY_BUF_LEN -1 ) {
 				xpkey_state = CDKEY_INVALID;
 			} else {
 				for ( i = 0; i < CDKEY_BUF_LEN-1; i++ ) {
@@ -3233,10 +3233,10 @@ bool idSessionLocal::CDKeysAreValid( bool strict ) {
 					}
 				}
 			}
-			if ( xpkey_state == CDKEY_UNKNOWN ) {
+			if ( xpkey_state == CDKEY_UNKNOWN ) {*/
 				xpkey_state = CDKEY_CHECKING;
 				emitAuth = true;
-			}
+			//}
 		} else {
 			xpkey_state = CDKEY_NA;
 		}
